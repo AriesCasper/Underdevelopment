@@ -7,6 +7,7 @@ import com.railway_booking.railwaybooking.exception.DuplicateStationException;
 import com.railway_booking.railwaybooking.exception.StationNotFoundException;
 import com.railway_booking.railwaybooking.repository.StationRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class StationService {
         this.stationRepository = stationRepository;
     }
 
-    // CREATE
+    @Transactional
     public StationResponse createStation(StationRequest request) {
 
         if (stationRepository.existsByStationCode(request.getStationCode())) {
@@ -32,8 +33,6 @@ public class StationService {
         station.setStationName(request.getStationName());
         station.setCity(request.getCity());
         station.setState(request.getState());
-
-        // New stations are ACTIVE by default
         station.setStatus("ACTIVE");
 
         Station savedStation = stationRepository.save(station);
@@ -41,7 +40,6 @@ public class StationService {
         return mapToResponse(savedStation);
     }
 
-    // GET ALL
     public List<StationResponse> getAllStations() {
 
         return stationRepository.findAll()
@@ -50,7 +48,6 @@ public class StationService {
                 .toList();
     }
 
-    // GET BY ID
     public StationResponse getStationById(Long id) {
 
         Station station = stationRepository.findById(id)
@@ -59,7 +56,7 @@ public class StationService {
         return mapToResponse(station);
     }
 
-    // UPDATE
+    @Transactional
     public StationResponse updateStation(
             Long id,
             StationRequest request
@@ -68,28 +65,34 @@ public class StationService {
         Station existingStation = stationRepository.findById(id)
                 .orElseThrow(() -> new StationNotFoundException(id));
 
+        if (stationRepository.existsByStationCodeAndStationIdNot(
+                request.getStationCode(),
+                id
+        )) {
+            throw new DuplicateStationException(request.getStationCode());
+        }
+
         existingStation.setStationCode(request.getStationCode());
         existingStation.setStationName(request.getStationName());
         existingStation.setCity(request.getCity());
         existingStation.setState(request.getState());
 
-        Station updatedStation =
-                stationRepository.save(existingStation);
+        Station updatedStation = stationRepository.save(existingStation);
 
         return mapToResponse(updatedStation);
     }
 
-    // DELETE
+    @Transactional
     public void deleteStation(Long id) {
 
-        if (!stationRepository.existsById(id)) {
-            throw new StationNotFoundException(id);
-        }
+        Station station = stationRepository.findById(id)
+                .orElseThrow(() -> new StationNotFoundException(id));
 
-        stationRepository.deleteById(id);
+        station.setStatus("INACTIVE");
+
+        stationRepository.save(station);
     }
 
-    // ENTITY ---→ RESPONSE DTO
     private StationResponse mapToResponse(Station station) {
 
         StationResponse response = new StationResponse();

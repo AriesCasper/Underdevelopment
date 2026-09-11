@@ -77,16 +77,38 @@ public class GlobalExceptionHandler {
         return error;
     }
 
+    //TRAIN NOT FOUND
+    @ExceptionHandler(TrainNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleTrainNotFound( TrainNotFoundException ex){
 
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "TRAIN_NOT_FOUND");
+        error.put("message", ex.getMessage());
+        return  error;
+    }
+
+    //DUPLICATE TRAIN
+    @ExceptionHandler(DuplicateTrainException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> handleDuplicateTrain(
+            DuplicateTrainException ex) {
+
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "DUPLICATE_TRAIN");
+        error.put("message", ex.getMessage());
+        return error;
+    }
     // DATABASE CONSTRAINT VIOLATION
     @ExceptionHandler(DataIntegrityViolationException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public Map<String, String> handleDuplicateData(
+    public Map<String, String> handleDataIntegrityViolation(
             DataIntegrityViolationException ex) {
 
         Map<String, String> error = new HashMap<>();
 
-        error.put("message", "Username or email already exists");
+        error.put("error", "DATABASE_CONSTRAINT_VIOLATION");
+        error.put("message", "Request violates a database constraint");
 
         return error;
     }

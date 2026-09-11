@@ -2,17 +2,17 @@ package com.railway_booking.railwaybooking.dto;
 
 public class TrainResponse {
 
-    private long traindId;
+    private long trainId;
     private String trainNumber;
     private String trainName;
     private String status;
 
-    public long getTraindId() {
-        return traindId;
+    public long getTrainId() {
+        return trainId;
     }
 
-    public void setTraindId(long traindId) {
-        this.traindId = traindId;
+    public void setTrainId(long trainId) {
+        this.trainId = trainId;
     }
 
     public String getTrainNumber() {

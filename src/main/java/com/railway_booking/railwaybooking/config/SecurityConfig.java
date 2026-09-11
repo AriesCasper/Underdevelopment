@@ -1,6 +1,7 @@
 package com.railway_booking.railwaybooking.config;
 
 import com.railway_booking.railwaybooking.security.JwtAuthenticationFilter;
+import jakarta.servlet.DispatcherType;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,18 +59,19 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // Authentication APIs
+                        .dispatcherTypeMatchers(
+                                DispatcherType.ERROR,
+                                DispatcherType.FORWARD
+                        ).permitAll()
+
                         .requestMatchers("/auth/**").permitAll()
 
-                        // Admin APIs
                         .requestMatchers("/admin/**")
                         .hasRole("ADMIN")
 
-                        // User APIs
                         .requestMatchers("/users/**")
                         .hasAnyRole("USER", "ADMIN")
 
-                        // Everything else
                         .anyRequest().authenticated()
                 )
 

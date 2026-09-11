@@ -25,7 +25,7 @@ public class JwtService {
         );
     }
 
-    public String generateToken(String username) {
+    public String generateToken(String username, String role) {
 
         Date now = new Date();
 
@@ -35,6 +35,7 @@ public class JwtService {
 
         return Jwts.builder()
                 .subject(username)
+                .claim("role", role)
                 .issuedAt(now)
                 .expiration(expiryDate)
                 .signWith(getSigningKey())
@@ -45,6 +46,9 @@ public class JwtService {
 
         return extractAllClaims(token)
                 .getSubject();
+    }
+    public String extractRole(String token){
+        return extractAllClaims(token).get("role", String.class);
     }
 
     private Claims extractAllClaims(String token) {
