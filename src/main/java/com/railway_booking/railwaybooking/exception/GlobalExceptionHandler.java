@@ -2,6 +2,7 @@ package com.railway_booking.railwaybooking.exception;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -112,4 +113,18 @@ public class GlobalExceptionHandler {
 
         return error;
     }
+
+    @ExceptionHandler(InvalidRefreshTokenException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public Map<String, String> handleInvalidRefreshToken(
+            InvalidRefreshTokenException ex) {
+
+        Map<String, String> error = new HashMap<>();
+
+        error.put("error", "INVALID_REFRESH_TOKEN");
+        error.put("message", ex.getMessage());
+
+        return error;
+    }
+
 }

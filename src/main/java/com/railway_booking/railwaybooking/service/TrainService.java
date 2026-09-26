@@ -80,9 +80,9 @@ public class TrainService {
 @Transactional
     public void deleteTrain(Long id) {
 
-        if (!trainRepository.existsById(id)) {
-            throw new TrainNotFoundException(id);
-        }
+//        if (!trainRepository.existsById(id)) {
+//            throw new TrainNotFoundException(id);
+//        }
 
         trainRepository.deleteById(id);
     }

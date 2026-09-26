@@ -24,19 +24,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.jwtService = jwtService;
     }
 
-    @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain
-    ) throws ServletException, IOException {
 
+    //Authorization: Bearer <JWT>
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
+
+        //Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.demo.payload.signature;
 
         String token = authHeader.substring(7);
 
@@ -45,9 +45,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String username = jwtService.extractUsername(token);
             String role = jwtService.extractRole(token);
 
-            if (jwtService.isTokenValid(token, username)
-                    && SecurityContextHolder.getContext()
-                    .getAuthentication() == null) {
+            if (jwtService.isTokenValid(token, username)&&
+                    SecurityContextHolder.getContext().getAuthentication() == null) {
 
                 SimpleGrantedAuthority authority =
                         new SimpleGrantedAuthority("ROLE_" + role);

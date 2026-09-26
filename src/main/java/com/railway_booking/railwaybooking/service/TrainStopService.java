@@ -26,6 +26,6 @@ public class TrainStopService {
 
   @Transactional
   public TrainStopResponse createTrainStop(TrainStopRequest request){
-        
+        return null;
   }
 }
