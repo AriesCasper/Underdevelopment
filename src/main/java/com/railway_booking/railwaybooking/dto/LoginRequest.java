@@ -1,8 +1,8 @@
 package com.railway_booking.railwaybooking.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
 
 @Getter
 @Setter

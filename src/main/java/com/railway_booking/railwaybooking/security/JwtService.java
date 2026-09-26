@@ -29,6 +29,8 @@ public class JwtService {
 
         Date now = new Date();
 
+
+
         Date expiryDate = new Date(
                 now.getTime() + expiration
         );
@@ -42,17 +44,8 @@ public class JwtService {
                 .compact();
     }
 
-    public String extractUsername(String token) {
-
-        return extractAllClaims(token)
-                .getSubject();
-    }
-    public String extractRole(String token){
-        return extractAllClaims(token).get("role", String.class);
-    }
-
+    //Return All Claims
     private Claims extractAllClaims(String token) {
-
         return Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()
@@ -60,18 +53,27 @@ public class JwtService {
                 .getPayload();
     }
 
-    public boolean isTokenValid(String token, String username) {
+    //Extract UserName
+    public String extractUsername(String token) {
+        return extractAllClaims(token)
+                .getSubject();
+    }
 
-        String tokenUsername = extractUsername(token);
-
-        return tokenUsername.equals(username)
-                && !isTokenExpired(token);
+    //Extract Roles
+    public String extractRole(String token){
+        return extractAllClaims(token).get("role", String.class);
     }
 
     private boolean isTokenExpired(String token) {
-
         return extractAllClaims(token)
                 .getExpiration()
                 .before(new Date());
     }
+
+    public boolean isTokenValid(String token, String username) {
+        String tokenUsername = extractUsername(token);
+        return tokenUsername.equals(username) && !isTokenExpired(token);
+    }
+
+
 }

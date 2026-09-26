@@ -5,13 +5,16 @@ import com.railway_booking.railwaybooking.dto.UserResponse;
 import com.railway_booking.railwaybooking.entity.User;
 import com.railway_booking.railwaybooking.exception.UserNotFoundException;
 import com.railway_booking.railwaybooking.repository.UserRepository;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class UserService {
+public class UserService  {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -27,6 +30,15 @@ public class UserService {
     // CREATE
     public UserResponse createUser(UserRequest request) {
 
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new RuntimeException("Username already exists");
+        }
+
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Email already exists");
+        }
+
+
         User user = new User();
 
         user.setUsername(request.getUsername());
@@ -41,6 +53,7 @@ public class UserService {
         user.setPhoneNumber(request.getPhoneNumber());
         user.setStatus("ACTIVE");
         user.setRole("USER");
+//        user.setRole("ADMIN");
 
         User savedUser = userRepository.save(user);
 
@@ -76,9 +89,12 @@ public class UserService {
         existingUser.setEmail(request.getEmail());
 
 
-        existingUser.setPasswordHash(
-                passwordEncoder.encode(request.getPassword())
-        );
+        if (request.getPassword() != null && !request.getPassword().isBlank()) {
+            existingUser.setPasswordHash(
+                    passwordEncoder.encode(request.getPassword())
+            );
+        }
+
 
         existingUser.setPhoneNumber(request.getPhoneNumber());
 
@@ -112,4 +128,5 @@ public class UserService {
 
         return response;
     }
+
 }
